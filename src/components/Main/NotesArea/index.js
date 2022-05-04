@@ -1,6 +1,9 @@
-import { Text } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View } from 'react-native';
+
+const notes = AsyncStorage.getItem('notes');
 
 export default () => 
-<Text>
-    Todas as suas notas ficaram aqui
-</Text>
+<View>
+    
+</View>

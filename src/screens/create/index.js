@@ -51,12 +51,18 @@ export default function Create({ navigation }) {
               { text: "Sim", onPress: () => {
                 if(AsyncStorage.getItem(NOTES)){
                   //Caso exista alguma nota salva
+                  
+                  title !== null || setTitle("TITULO")
+                  
                   const notes = JSON.parse(AsyncStorage.getItem(NOTES))
                   AsyncStorage.setItem(NOTES, JSON.stringify({
                     notes: notes.concat({id: generateUUID(), date: NOW, title: title, text: note})
                   }))
                 }else{
                   //Caso não exista nenhuma nota salva
+                  
+                  title !== null || setTitle("TITULO")
+
                   AsyncStorage.setItem(NOTES, JSON.stringify({
                     notes: [
                       {id: generateUUID(), date: NOW, title: title, text: note}
