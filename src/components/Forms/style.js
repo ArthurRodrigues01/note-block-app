@@ -25,29 +25,6 @@ const InputNote = styled.TextInput`
     font-weight: 500;
 `
 
-const CreateButton = styled.TouchableOpacity`
-    border-radius: 50px;
-    overflow: visible;
-    width: 75px;
-    height: 75px;
-    position: absolute; /* Previously: position: fixed*/
-    align-self: flex-end;
-    right: 15px;
-    bottom: 15px;
-    background-color: lightblue;
-    color: #fff;
-`
-const ButtonContainer = styled.View`
-    width: ${WindowWidth};
-    height: ${WindowHeight};
-    background-color: #FFFFFF00;
-    position: absolute;
-    top: 0;
-    bottom: 0; 
-    right: 0; 
-    left: 0; 
-`
-
 const DivLine = styled.View`
     border: 1px solid gray;
     margin-left: 15px;

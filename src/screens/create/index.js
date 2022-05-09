@@ -1,12 +1,8 @@
 import React, {useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ScrollView, Alert, TouchableOpacity, Image } from 'react-native';
+import { ScrollView, Alert, TouchableOpacity, Image, View } from 'react-native';
 import Svg, { Path } from "react-native-svg"
 import  {InputNoteTitle, InputNote, DivLine} from '../../components/Forms/style.js';
-// import Forms from '../../components/Forms';
-
-
-const NOTES = "notes" 
 
 const dateObj = new Date()
 var d = dateObj.getUTCDate()
@@ -16,8 +12,9 @@ var h = dateObj.getUTCHours()
 var M = dateObj.getUTCMinutes()
 var s = dateObj.getUTCSeconds()
 var mil = dateObj.getUTCMilliseconds()
-const NOW = `${d}-${m}-${y} ; ${h}:${M}:${s}:${mil}`
+const NOW = `${d}-${m}-${y} ; ${h}:${M}:${s}:${mil}` // Datetime atual
 
+//Gerador de id
 function generateUUID() { // Public Domain/MIT
   var d = new Date().getTime();//Timestamp
   var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
@@ -34,9 +31,39 @@ function generateUUID() { // Public Domain/MIT
   });
 }
 
+//constante das notas
+const NOTES = "notes" 
+
+
+
 export default function Create({ navigation }) {
-    const [title, setTitle] = useState(null)
-    const [note, setNote] = useState(null)
+  const [title, setTitle] = useState(null)
+  const [note, setNote] = useState(null)
+  
+  // Função para criar as notas e alterar as existentes
+  function updateNote(){
+    if(AsyncStorage.getItem(NOTES)){
+      //Caso exista alguma nota salva
+      
+      title !== null || setTitle("TITULO")
+  
+      const notes = JSON.parse(AsyncStorage.getItem(NOTES))
+  
+      AsyncStorage.setItem(NOTES, JSON.stringify({
+        notes: notes.notes.concat({id: generateUUID(), date: NOW, title: title, text: note})
+      }))
+    }else{
+      //Caso não exista nenhuma nota salva
+      
+      title !== null || setTitle("TITULO")
+  
+      AsyncStorage.setItem(NOTES, JSON.stringify({
+        notes: [
+          {id: generateUUID(), date: NOW, title: title, text: note}
+        ]
+      }))
+    }
+  }
 
     React.useLayoutEffect(() => {
       navigation.setOptions({
@@ -48,28 +75,7 @@ export default function Create({ navigation }) {
                 onPress: () => navigation.goBack(),
                 style: "cancel"
               },
-              { text: "Sim", onPress: () => {
-                if(AsyncStorage.getItem(NOTES)){
-                  //Caso exista alguma nota salva
-                  
-                  title !== null || setTitle("TITULO")
-                  
-                  const notes = JSON.parse(AsyncStorage.getItem(NOTES))
-                  AsyncStorage.setItem(NOTES, JSON.stringify({
-                    notes: notes.concat({id: generateUUID(), date: NOW, title: title, text: note})
-                  }))
-                }else{
-                  //Caso não exista nenhuma nota salva
-                  
-                  title !== null || setTitle("TITULO")
-
-                  AsyncStorage.setItem(NOTES, JSON.stringify({
-                    notes: [
-                      {id: generateUUID(), date: NOW, title: title, text: note}
-                    ]
-                  }))
-                }
-              }}
+              { text: "Sim", onPress: updateNote()}
             ]);
             return true;
             }
