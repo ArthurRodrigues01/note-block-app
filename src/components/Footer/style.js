@@ -2,7 +2,7 @@ import styled from 'styled-components/native'
 
 const FooterBox = styled.View`
     background-color: #Daa424;
-    padding: 40px;
+    padding: 20px;
     justify-content: center;
     align-items: center;
 `

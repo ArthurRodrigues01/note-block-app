@@ -1,17 +1,19 @@
 import React from 'react';
-import { ScrollView, Button } from 'react-native';
+import { ScrollView, Button, View } from 'react-native';
 import Header from '../../components/Header';
 import Main from '../../components/Main';
 import Footer from '../../components/Footer';
 
 export default function Home({ navigation }) {
-    return (
+  return (
+    <View style={{ flex: 1 }}>
       <ScrollView>
-          <Main/>
-          <Button
-          title="Mudar"
-          onPress={ () => navigation.navigate ("CreateNote")}/>
-          <Footer>@ArtProductions</Footer>
+        <Main />
       </ScrollView>
-    );
-  }
+      <Button
+        title="Criar"
+        onPress={() => navigation.navigate("CreateNote")} />
+    </View>
+
+  );
+}

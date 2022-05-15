@@ -1,8 +1,12 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView, Alert, TouchableOpacity, Image, View } from 'react-native';
 import Svg, { Path } from "react-native-svg"
 import  {InputNoteTitle, InputNote, DivLine} from '../../components/Forms/style.js';
+
+
+
+
 
 const dateObj = new Date()
 var d = dateObj.getUTCDate()
@@ -13,6 +17,10 @@ var M = dateObj.getUTCMinutes()
 var s = dateObj.getUTCSeconds()
 var mil = dateObj.getUTCMilliseconds()
 const NOW = `${d}-${m}-${y} ; ${h}:${M}:${s}:${mil}` // Datetime atual
+
+
+
+
 
 //Gerador de id
 function generateUUID() { // Public Domain/MIT
@@ -31,14 +39,22 @@ function generateUUID() { // Public Domain/MIT
   });
 }
 
+
+
+
+
 //constante das notas
 const NOTES = "notes" 
 
 
 
-export default function Create({ navigation }) {
-  const [title, setTitle] = useState(null)
-  const [note, setNote] = useState(null)
+
+
+export default function Create({ navigation, route }) {  
+  const isEditableMode = Boolean(route.params && route.params.title)
+
+  const [title, setTitle] = useState(isEditableMode ? route.params.title  : null)
+  const [note, setNote] = useState(isEditableMode ? route.params.text  : null)
   
   // Função para criar as notas e alterar as existentes
   function updateNote(){
@@ -46,12 +62,30 @@ export default function Create({ navigation }) {
       //Caso exista alguma nota salva
       
       title !== null || setTitle("TITULO")
-  
-      const notes = JSON.parse(AsyncStorage.getItem(NOTES))
-  
-      AsyncStorage.setItem(NOTES, JSON.stringify({
-        notes: notes.notes.concat({id: generateUUID(), date: NOW, title: title, text: note})
-      }))
+
+      if(isEditableMode){
+        try {
+            
+          const notes = JSON.parse(AsyncStorage.getItem(NOTES).notes)
+          console.warn(notes)
+          AsyncStorage.setItem(NOTES, JSON.stringify({
+            notes: notes.concat({id: route.params.id, date: NOW, title: title, text: note})
+          }))   
+        } catch (error) {
+             
+        }
+      }else{
+        try {
+          
+          const notes = JSON.parse(AsyncStorage.getItem(NOTES).notes)
+          console.warn(notes)
+          AsyncStorage.setItem(NOTES, JSON.stringify({
+            notes: notes.concat({id: generateUUID(), date: NOW, title: title, text: note})
+          }))   
+        } catch (error) {
+          
+        }
+      }
     }else{
       //Caso não exista nenhuma nota salva
       
@@ -65,19 +99,32 @@ export default function Create({ navigation }) {
     }
   }
 
-    React.useLayoutEffect(() => {
+
+
+
+
+    useEffect(() => {
       navigation.setOptions({
         headerLeft: () => (
           <TouchableOpacity 
-          onPress={() => {Alert.alert("Nota", "Salvar nota?", [
-              {
-                text: "Não",
-                onPress: () => navigation.goBack(),
-                style: "cancel"
-              },
-              { text: "Sim", onPress: updateNote()}
-            ]);
-            return true;
+          onPress={() => {
+              if(note !== null && note !== ""){
+                  Alert.alert("Nota", "Salvar nota?", [
+                  {
+                    text: "Não",
+                    onPress: () => navigation.goBack(),
+                    style: "cancel"
+                  },
+                  { text: "Sim", onPress: () => {
+                    updateNote()
+                    console.warn(AsyncStorage.getItem(NOTES))
+                    navigation.goBack()
+                  }}
+                ]);
+                return true;
+              }else{
+                navigation.goBack()
+              }
             }
           } 
           style={{backgroundColor: "#Daa424", }}>
@@ -95,20 +142,27 @@ export default function Create({ navigation }) {
           </TouchableOpacity>
         ),
       });
-    }, [navigation]);
+    });
+
+
+
+
 
     return (
-      <View style={{flex: 1}}>
+      <View>
         <ScrollView>
             <InputNoteTitle 
             placeholder="Digite um título..."
-            onChange={setTitle}/>
+            onChangeText={(val) => setTitle(val)}
+            value={title}
+            />
             <DivLine/>
             <InputNote 
             placeholder="Escreva uma nota..."
             multiline={true}
             numberOfLines={20}
-            onChange={setNote}
+            onChangeText={(val) => setNote(val)}
+            value={note}
             />
         </ScrollView>
       </View>
